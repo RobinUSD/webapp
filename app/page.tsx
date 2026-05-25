@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { formatUnits } from 'viem';
 import { getWalletClient, publicClient, getERC20Contract } from '@/lib/viem';
-import { stocksTokens, StockToken } from '@/lib/config';
+import { stocksTokens, StockToken, USDRHTokenAddress } from '@/lib/config';
 import { depositAndMint } from './actions/deposit';
 import { burnAndRedeem } from './actions/return';
 
@@ -24,6 +24,7 @@ export default function Home() {
   // Return form state
   const [returnToken, setReturnToken] = useState<StockToken>('TSLA');
   const [returnAmount, setReturnAmount] = useState('');
+  const [balanceUSDRh, setBalanceUSDRh] = useState('0');
 
   const connectWallet = async () => {
     try {
@@ -57,6 +58,19 @@ export default function Home() {
       } catch (error) {
         console.error(`Failed to fetch balance for ${symbol}:`, error);
       }
+    }
+    
+    // Fetch USDRh balance
+    try {
+      const usdrhBalance = await publicClient.readContract({
+        address: USDRHTokenAddress as `0x${string}`,
+        abi: getERC20Contract(USDRHTokenAddress).abi,
+        functionName: 'balanceOf',
+        args: [address]
+      });
+      setBalanceUSDRh(formatUnits(usdrhBalance, 18));
+    } catch (error) {
+      console.error('Failed to fetch USDRh balance:', error);
     }
 
     setBalances(newBalances);
@@ -121,6 +135,19 @@ export default function Home() {
           <>
             <div className="text-sm text-zinc-600 dark:text-zinc-400">
               Connected: {account.slice(0, 6)}...{account.slice(-4)}
+            </div>
+
+            {/* USDRh Balances */}
+            <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
+              <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
+                Your USDRh Balance
+              </h2>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-600 dark:text-zinc-400">USDRh:</span>
+                    <span className="text-black dark:text-zinc-50">{balanceUSDRh}</span>
+                  </div>
+              </div>
             </div>
 
             {/* Balances */}
