@@ -1,10 +1,16 @@
-import { createWalletClient, createPublicClient, custom, http } from 'viem';
-import { arbitrumSepolia } from 'viem/chains';
+import { createWalletClient, createPublicClient, custom, http, defineChain } from 'viem';
 import { USDRHManagerABI, ERC20ABI } from './abi';
 import { USDRHManagerAddress } from './config';
 
-// Arbitrum Sepolia chain configuration
-export const chain = arbitrumSepolia;
+// Robinhood chain configuration
+export const chain = defineChain({
+  id: 46630,
+  name: 'Robinhood Chain Testnet',
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://rpc.testnet.chain.robinhood.com'] },
+  },
+});
 
 // Create public client for read operations
 export const publicClient = createPublicClient({

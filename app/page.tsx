@@ -107,7 +107,7 @@ export default function Home() {
           Robin USD
         </h1>
         <p className="text-lg text-zinc-600 dark:text-zinc-400 text-center">
-          Mint USDRH stablecoins by depositing stock tokens as collateral
+          Mint USDRh stablecoins by depositing stock tokens as collateral
         </p>
 
         {!account ? (
@@ -168,7 +168,7 @@ export default function Home() {
                   type="submit"
                   className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
                 >
-                  Deposit & Mint USDRH
+                  Deposit & Mint USDRh
                 </button>
               </form>
             </div>
@@ -193,7 +193,7 @@ export default function Home() {
                 <input
                   type="number"
                   step="0.000001"
-                  placeholder="USDRH Amount"
+                  placeholder="USDRh Amount"
                   value={returnAmount}
                   onChange={(e) => setReturnAmount(e.target.value)}
                   className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black text-black dark:text-zinc-50"
