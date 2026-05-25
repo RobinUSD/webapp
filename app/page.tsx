@@ -7,6 +7,7 @@ import { stocksTokens, StockToken, USDRHTokenAddress } from '@/lib/config';
 import { depositAndMint } from './actions/deposit';
 import { burnAndRedeem } from './actions/return';
 import { pay } from './actions/pay';
+import { getTotalSupply } from './actions/status';
 
 export default function Home() {
   const [account, setAccount] = useState<`0x${string}` | null>(null);
@@ -30,6 +31,8 @@ export default function Home() {
 
   const [payToAddress, setPayToAddress] = useState('');
   const [payAmount, setPayAmount] = useState('0');
+
+  const [totalSupply, setTotalSupply] = useState('0');
 
   const connectWallet = async () => {
     try {
@@ -85,7 +88,17 @@ export default function Home() {
     if (account) {
       fetchBalances(account);
     }
+    handleStatus();
   }, [account]);
+
+  const handleStatus = async () => {
+    try {
+      const totalSupply = await getTotalSupply();
+      setTotalSupply(totalSupply);
+    } catch (error) {
+      console.error('Failed to get total supply:', error);
+    }
+  };
 
   const handleDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,6 +171,19 @@ export default function Home() {
           <>
             <div className="text-sm text-zinc-600 dark:text-zinc-400">
               Connected: {account.slice(0, 6)}...{account.slice(-4)}
+            </div>
+
+            {/* USDRh Total Supply */}
+            <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
+              <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
+                Total USDRh Supply
+              </h2>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-600 dark:text-zinc-400">USDRh:</span>
+                    <span className="text-black dark:text-zinc-50">{totalSupply}</span>
+                  </div>
+              </div>
             </div>
 
             {/* USDRh Balances */}
