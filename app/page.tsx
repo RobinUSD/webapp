@@ -6,6 +6,7 @@ import { getWalletClient, publicClient, getERC20Contract } from '@/lib/viem';
 import { stocksTokens, StockToken, USDRHTokenAddress } from '@/lib/config';
 import { depositAndMint } from './actions/deposit';
 import { burnAndRedeem } from './actions/return';
+import { pay } from './actions/pay';
 
 export default function Home() {
   const [account, setAccount] = useState<`0x${string}` | null>(null);
@@ -24,7 +25,11 @@ export default function Home() {
   // Return form state
   const [returnToken, setReturnToken] = useState<StockToken>('TSLA');
   const [returnAmount, setReturnAmount] = useState('');
+
   const [balanceUSDRh, setBalanceUSDRh] = useState('0');
+
+  const [payToAddress, setPayToAddress] = useState('');
+  const [payAmount, setPayAmount] = useState('0');
 
   const connectWallet = async () => {
     try {
@@ -111,6 +116,24 @@ export default function Home() {
     } catch (error) {
       console.error('Return failed:', error);
       alert('Return failed. Please try again.');
+    }
+  };
+
+  const handlePayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!account || !payAmount || !payToAddress) return;
+
+    try {
+      const hash = await pay(payToAddress, payAmount);
+      if (hash) {
+        alert('Payment successful!');
+        setPayAmount('0');
+        setPayToAddress('');
+        fetchBalances(account);
+      }
+    } catch (error) {
+      console.error('Payment failed:', error);
+      alert('Payment failed. Please try again.');
     }
   };
 
@@ -231,6 +254,38 @@ export default function Home() {
                   className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                 >
                   Burn & Redeem
+                </button>
+              </form>
+            </div>
+
+            {/* Pay Form */}
+            <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
+              <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
+                Send USDRh
+              </h2>
+              <form onSubmit={handlePayment} className="flex flex-col gap-3">
+                <input
+                  type="number"
+                  step="0.000001"
+                  placeholder="USDRh Amount"
+                  value={payAmount}
+                  onChange={(e) => setPayAmount(e.target.value)}
+                  className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black text-black dark:text-zinc-50"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Recipient Address"
+                  value={payToAddress}
+                  onChange={(e) => setPayToAddress(e.target.value)}
+                  className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black text-black dark:text-zinc-50"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                >
+                  Send
                 </button>
               </form>
             </div>
