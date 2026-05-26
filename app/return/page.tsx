@@ -1,15 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { stocksTokens, StockToken } from '@/lib/config';
-import { burnAndRedeem } from '../actions/return';
+import { burnAndRedeem, getUserCollateralInfo } from '../actions/return';
 import Link from 'next/link';
 
 export default function ReturnPage() {
   const { account, balances, usdrhBalance, connectWallet, refreshBalances } = useWallet();
   const [returnToken, setReturnToken] = useState<StockToken>('TSLA');
   const [returnAmount, setReturnAmount] = useState('');
+  const [collateralByUser, setCollateralByUser] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (account) {
+      getUserCollateralInfo()
+        .then((collateral) => {
+          setCollateralByUser(collateral);
+        })
+        .catch(console.error);
+    }
+  }, [account]);
+
+  
 
   const handleReturn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +31,7 @@ export default function ReturnPage() {
     try {
       const tokenAddress = stocksTokens[returnToken];
       await burnAndRedeem(tokenAddress, returnAmount);
+      
       alert('Return successful!');
       setReturnAmount('');
       refreshBalances();
@@ -83,6 +97,21 @@ export default function ReturnPage() {
           </h2>
           <div className="grid grid-cols-2 gap-2 text-sm">
             {Object.entries(balances).map(([symbol, balance]) => (
+              <div key={symbol} className="flex justify-between">
+                <span className="text-zinc-600 dark:text-zinc-400">{symbol}:</span>
+                <span className="text-black dark:text-zinc-50">{balance}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Collateral by user */}
+        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
+          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
+            Your Stock Token in collateral for USDRh
+          </h2>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {Object.entries(collateralByUser).map(([symbol, balance]) => (
               <div key={symbol} className="flex justify-between">
                 <span className="text-zinc-600 dark:text-zinc-400">{symbol}:</span>
                 <span className="text-black dark:text-zinc-50">{balance}</span>
