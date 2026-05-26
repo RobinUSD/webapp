@@ -3,11 +3,12 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { formatUnits } from 'viem';
 import { getWalletClient, publicClient, getERC20Contract } from '@/lib/viem';
-import { stocksTokens, StockToken } from '@/lib/config';
+import { stocksTokens, StockToken, USDRHTokenAddress } from '@/lib/config';
 
 interface WalletContextType {
   account: `0x${string}` | null;
   balances: Record<StockToken, string>;
+  usdrhBalance: string;
   connectWallet: () => Promise<void>;
   refreshBalances: () => Promise<void>;
 }
@@ -23,6 +24,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     NFLX: '0',
     AMD: '0'
   });
+  const [usdrhBalance, setUsdrhBalance] = useState('0');
 
   const connectWallet = async () => {
     try {
@@ -60,6 +62,18 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
     }
 
+    try {
+      const usdrhBalance = await publicClient.readContract({
+        address: USDRHTokenAddress as `0x${string}`,
+        abi: getERC20Contract(USDRHTokenAddress).abi,
+        functionName: 'balanceOf',
+        args: [account]
+      });
+      setUsdrhBalance(formatUnits(usdrhBalance, 18));
+    } catch (error) {
+      console.error('Failed to fetch USDRh balance:', error);
+    }
+
     setBalances(newBalances);
   };
 
@@ -70,7 +84,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, [account]);
 
   return (
-    <WalletContext.Provider value={{ account, balances, connectWallet, refreshBalances }}>
+    <WalletContext.Provider value={{ account, balances, usdrhBalance, connectWallet, refreshBalances }}>
       {children}
     </WalletContext.Provider>
   );

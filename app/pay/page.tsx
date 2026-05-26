@@ -6,7 +6,7 @@ import { pay } from '../actions/pay';
 import Link from 'next/link';
 
 export default function PayPage() {
-  const { account, connectWallet } = useWallet();
+  const { account, usdrhBalance, connectWallet } = useWallet();
   const [toAddress, setToAddress] = useState('');
   const [payAmount, setPayAmount] = useState('');
 
@@ -60,6 +60,19 @@ export default function PayPage() {
 
         <div className="text-sm text-zinc-600 dark:text-zinc-400">
           Connected: {account.slice(0, 6)}...{account.slice(-4)}
+        </div>
+
+        {/* Balances */}
+        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
+          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
+            Your USDRh Balance
+          </h2>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-zinc-600 dark:text-zinc-400">USDRh:</span>
+              <span className="text-black dark:text-zinc-50">{usdrhBalance}</span>
+            </div>
+          </div>
         </div>
 
         {/* Pay Form */}
