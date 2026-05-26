@@ -93,6 +93,18 @@ export default function Home() {
                   Send USDRh stablecoins to another address
                 </p>
               </Link>
+
+              <Link
+                href="/status"
+                className="block p-6 bg-zinc-100 dark:bg-zinc-900 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+              >
+                <h3 className="text-xl font-semibold text-black dark:text-zinc-50 mb-2">
+                  Status
+                </h3>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                  View total USDRh supply and protocol status
+                </p>
+              </Link>
             </div>
           </>
         )}
