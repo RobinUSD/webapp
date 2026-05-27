@@ -23,6 +23,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const { connectAsync, connectors } = useConnect();
   const { disconnectAsync } = useDisconnect();
   const account = (address as `0x${string}` | undefined) ?? null;
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [balances, setBalances] = useState<Record<StockToken, string>>({
     TSLA: '0',
     AMZN: '0',
@@ -33,28 +34,18 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [usdrhBalance, setUsdrhBalance] = useState('0');
 
   const connectWallet = async () => {
+    setIsWalletModalOpen(true);
+  };
+
+  const connectWithConnector = async (connectorId: string) => {
     try {
-      const connector =
-        connectors.find((item) => item.id === 'injected') ?? connectors[0];
-
+      const connector = connectors.find((item) => item.id === connectorId);
       if (!connector) {
-        throw new Error('No wallet connectors available');
+        throw new Error('Selected connector is not available');
       }
 
-      try {
-        await connectAsync({ connector, chainId: robinhoodChain.id });
-      } catch (injectedError) {
-        const walletConnectConnector = connectors.find(
-          (item) => item.id === 'walletConnect',
-        );
-        if (!walletConnectConnector) {
-          throw injectedError;
-        }
-        await connectAsync({
-          connector: walletConnectConnector,
-          chainId: robinhoodChain.id,
-        });
-      }
+      await connectAsync({ connector, chainId: robinhoodChain.id });
+      setIsWalletModalOpen(false);
     } catch (error) {
       console.error('Failed to connect wallet:', error);
       alert('Failed to connect wallet. Check wallet permissions and network.');
@@ -64,6 +55,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const disconnectWallet = async () => {
     try {
       await disconnectAsync();
+      setIsWalletModalOpen(false);
       setBalances({
         TSLA: '0',
         AMZN: '0',
@@ -129,6 +121,41 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   return (
     <WalletContext.Provider value={{ account, balances, usdrhBalance, connectWallet, disconnectWallet, refreshBalances }}>
       {children}
+      {isWalletModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-xl dark:bg-zinc-900">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-black dark:text-zinc-50">
+                Connect Wallet
+              </h2>
+              <button
+                onClick={() => setIsWalletModalOpen(false)}
+                className="rounded px-2 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {connectors.length === 0 ? (
+                <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                  No wallet options available.
+                </p>
+              ) : (
+                connectors.map((connector) => (
+                  <button
+                    key={connector.id}
+                    onClick={() => void connectWithConnector(connector.id)}
+                    className="w-full rounded-lg border border-zinc-200 px-4 py-2 text-left text-sm text-zinc-800 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                  >
+                    {connector.name}
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </WalletContext.Provider>
   );
 }
