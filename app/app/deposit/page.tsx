@@ -1,43 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { stocksTokens, StockToken } from '@/lib/config';
-import { burnAndRedeem, getUserCollateralInfo } from '../actions/return';
+import { depositAndMint } from '../../actions/deposit';
 import Link from 'next/link';
 
-export default function ReturnPage() {
+export default function DepositPage() {
   const { account, balances, usdrhBalance, connectWallet, refreshBalances } = useWallet();
-  const [returnToken, setReturnToken] = useState<StockToken>('TSLA');
-  const [returnAmount, setReturnAmount] = useState('');
-  const [collateralByUser, setCollateralByUser] = useState<Record<string, string>>({});
+  const [depositToken, setDepositToken] = useState<StockToken>('TSLA');
+  const [depositAmount, setDepositAmount] = useState('');
 
-  useEffect(() => {
-    if (account) {
-      getUserCollateralInfo()
-        .then((collateral) => {
-          setCollateralByUser(collateral);
-        })
-        .catch(console.error);
-    }
-  }, [account]);
-
-  
-
-  const handleReturn = async (e: React.FormEvent) => {
+  const handleDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!account || !returnAmount) return;
+    if (!account || !depositAmount) return;
 
     try {
-      const tokenAddress = stocksTokens[returnToken];
-      await burnAndRedeem(tokenAddress, returnAmount);
-      
-      alert('Return successful!');
-      setReturnAmount('');
+      const tokenAddress = stocksTokens[depositToken];
+      await depositAndMint(tokenAddress, depositAmount);
+      alert('Deposit successful!');
+      setDepositAmount('');
       refreshBalances();
     } catch (error) {
-      console.error('Return failed:', error);
-      alert('Return failed. Please try again.');
+      console.error('Deposit failed:', error);
+      alert('Deposit failed. Please try again.');
     }
   };
 
@@ -46,7 +32,7 @@ export default function ReturnPage() {
       <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black min-h-screen">
         <main className="flex flex-col w-full max-w-2xl items-center gap-8 py-16 px-8 bg-white dark:bg-black">
           <h1 className="text-3xl font-semibold text-black dark:text-zinc-50">
-            Burn & Redeem
+            Deposit & Mint
           </h1>
           <button
             onClick={connectWallet}
@@ -54,7 +40,7 @@ export default function ReturnPage() {
           >
             Connect Wallet
           </button>
-          <Link href="/" className="text-blue-600 hover:underline">
+          <Link href="/app" className="text-blue-600 hover:underline">
             Back to Dashboard
           </Link>
         </main>
@@ -67,9 +53,9 @@ export default function ReturnPage() {
       <main className="flex flex-col w-full max-w-2xl items-center gap-8 py-16 px-8 bg-white dark:bg-black">
         <div className="w-full flex justify-between items-center">
           <h1 className="text-3xl font-semibold text-black dark:text-zinc-50">
-            Burn & Redeem
+            Deposit & Mint
           </h1>
-          <Link href="/" className="text-blue-600 hover:underline">
+          <Link href="/app" className="text-blue-600 hover:underline">
             Back to Dashboard
           </Link>
         </div>
@@ -90,7 +76,7 @@ export default function ReturnPage() {
             </div>
           </div>
         </div>
-
+        
         <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
           <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
             Your Stock Token Balances
@@ -105,30 +91,15 @@ export default function ReturnPage() {
           </div>
         </div>
 
-        {/* Collateral by user */}
+        {/* Deposit Form */}
         <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
           <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
-            Your Stock Token in collateral for USDRh
+            Deposit Stock Tokens & Mint USDRh
           </h2>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            {Object.entries(collateralByUser).map(([symbol, balance]) => (
-              <div key={symbol} className="flex justify-between">
-                <span className="text-zinc-600 dark:text-zinc-400">{symbol}:</span>
-                <span className="text-black dark:text-zinc-50">{balance}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Return Form */}
-        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
-            Burn USDRh & Redeem Stock Tokens
-          </h2>
-          <form onSubmit={handleReturn} className="flex flex-col gap-3">
+          <form onSubmit={handleDeposit} className="flex flex-col gap-3">
             <select
-              value={returnToken}
-              onChange={(e) => setReturnToken(e.target.value as StockToken)}
+              value={depositToken}
+              onChange={(e) => setDepositToken(e.target.value as StockToken)}
               className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black text-black dark:text-zinc-50"
             >
               {Object.keys(stocksTokens).map((symbol) => (
@@ -140,17 +111,17 @@ export default function ReturnPage() {
             <input
               type="number"
               step="0.000001"
-              placeholder="USDRh Amount"
-              value={returnAmount}
-              onChange={(e) => setReturnAmount(e.target.value)}
+              placeholder="Amount"
+              value={depositAmount}
+              onChange={(e) => setDepositAmount(e.target.value)}
               className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black text-black dark:text-zinc-50"
               required
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
             >
-              Burn & Redeem
+              Deposit & Mint USDRh
             </button>
           </form>
         </div>

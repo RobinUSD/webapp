@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
-import { getTotalSupply } from '../actions/status';
+import { getTotalSupply } from '../../actions/status';
 import Link from 'next/link';
 
 export default function StatusPage() {
@@ -35,7 +35,7 @@ export default function StatusPage() {
           >
             Connect Wallet
           </button>
-          <Link href="/" className="text-blue-600 hover:underline">
+          <Link href="/app" className="text-blue-600 hover:underline">
             Back to Dashboard
           </Link>
         </main>
@@ -50,7 +50,7 @@ export default function StatusPage() {
           <h1 className="text-3xl font-semibold text-black dark:text-zinc-50">
             Status
           </h1>
-          <Link href="/" className="text-blue-600 hover:underline">
+          <Link href="/app" className="text-blue-600 hover:underline">
             Back to Dashboard
           </Link>
         </div>
