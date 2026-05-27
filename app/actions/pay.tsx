@@ -5,7 +5,7 @@ import { getWalletClient, publicClient, getERC20Contract } from '@/lib/viem';
 import { USDRHTokenAddress } from '@/lib/config';
 
 export async function pay(toAddress: string, amount: string) {
-  const walletClient = getWalletClient();
+  const walletClient = await getWalletClient();
   const [account] = await walletClient.getAddresses();
 
   // Convert amount to wei (assuming 18 decimals)

@@ -5,7 +5,7 @@ import { getWalletClient, publicClient, getManagerContract } from '@/lib/viem';
 import { USDRHManagerAddress, stocksTokens } from '@/lib/config';
 
 export async function burnAndRedeem(tokenAddress: string, stableAmount: string) {
-  const walletClient = getWalletClient();
+  const walletClient = await getWalletClient();
   const [account] = await walletClient.getAddresses();
 
   // Convert amount to wei (assuming 18 decimals)
@@ -26,7 +26,7 @@ export async function burnAndRedeem(tokenAddress: string, stableAmount: string) 
 }
 
 export async function getUserCollateralInfo() {
-  const walletClient = getWalletClient();
+  const walletClient = await getWalletClient();
   const [account] = await walletClient.getAddresses();
 
   const collateralAvailable: Record<string, string> = {};

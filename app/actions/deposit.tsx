@@ -5,7 +5,7 @@ import { getWalletClient, publicClient, getManagerContract, getERC20Contract } f
 import { USDRHManagerAddress } from '@/lib/config';
 
 export async function approveToken(tokenAddress: string, amount: bigint) {
-  const walletClient = getWalletClient();
+  const walletClient = await getWalletClient();
   const [account] = await walletClient.getAddresses();
 
   const { request } = await publicClient.simulateContract({
@@ -22,7 +22,7 @@ export async function approveToken(tokenAddress: string, amount: bigint) {
 }
 
 export async function depositAndMint(tokenAddress: string, amount: string) {
-  const walletClient = getWalletClient();
+  const walletClient = await getWalletClient();
   const [account] = await walletClient.getAddresses();
 
   // Convert amount to wei (assuming 18 decimals)

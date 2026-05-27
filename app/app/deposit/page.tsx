@@ -7,7 +7,7 @@ import { depositAndMint } from '../../actions/deposit';
 import Link from 'next/link';
 
 export default function DepositPage() {
-  const { account, balances, usdrhBalance, connectWallet, refreshBalances } = useWallet();
+  const { account, balances, usdrhBalance, connectWallet, disconnectWallet, refreshBalances } = useWallet();
   const [depositToken, setDepositToken] = useState<StockToken>('TSLA');
   const [depositAmount, setDepositAmount] = useState('');
 
@@ -60,8 +60,16 @@ export default function DepositPage() {
           </Link>
         </div>
 
-        <div className="text-sm text-zinc-600 dark:text-zinc-400">
-          Connected: {account.slice(0, 6)}...{account.slice(-4)}
+        <div className="w-full flex items-center justify-between gap-3">
+          <div className="text-sm text-zinc-600 dark:text-zinc-400">
+            Connected: {account.slice(0, 6)}...{account.slice(-4)}
+          </div>
+          <button
+            onClick={disconnectWallet}
+            className="px-3 py-1.5 text-sm bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
+          >
+            Disconnect
+          </button>
         </div>
 
         {/* Balances */}

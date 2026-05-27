@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useWallet } from '@/contexts/WalletContext';
 
 export default function Dashboard() {
-  const { account, balances, usdrhBalance, connectWallet } = useWallet();
+  const { account, balances, usdrhBalance, connectWallet, disconnectWallet } = useWallet();
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black min-h-screen">
@@ -30,8 +30,16 @@ export default function Dashboard() {
           </button>
         ) : (
           <>
-            <div className="text-sm text-zinc-600 dark:text-zinc-400">
-              Connected: {account.slice(0, 6)}...{account.slice(-4)}
+            <div className="w-full flex items-center justify-between gap-3">
+              <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                Connected: {account.slice(0, 6)}...{account.slice(-4)}
+              </div>
+              <button
+                onClick={disconnectWallet}
+                className="px-3 py-1.5 text-sm bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
+              >
+                Disconnect
+              </button>
             </div>
 
             {/* Balances */}

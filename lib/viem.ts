@@ -1,33 +1,23 @@
-import { createWalletClient, createPublicClient, custom, http, defineChain } from 'viem';
+import { createPublicClient, http } from 'viem';
+import { getWalletClient as getWagmiWalletClient } from 'wagmi/actions';
 import { USDRHManagerABI, ERC20ABI } from './abi';
 import { USDRHManagerAddress } from './config';
+import { robinhoodChain, wagmiConfig } from './wagmi';
 
-// Robinhood chain configuration
-export const chain = defineChain({
-  id: 46630,
-  name: 'Robinhood Chain Testnet',
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-  rpcUrls: {
-    default: { http: ['https://rpc.testnet.chain.robinhood.com'] },
-  },
-});
+export const chain = robinhoodChain;
 
 // Create public client for read operations
 export const publicClient = createPublicClient({
   chain,
-  transport: http()
+  transport: http('https://rpc.testnet.chain.robinhood.com')
 });
 
-// Create wallet client for write operations (requires user wallet connection)
-export function getWalletClient() {
-  if (typeof window === 'undefined' || !(window as any).ethereum) {
-    throw new Error('MetaMask not installed');
+export async function getWalletClient() {
+  const walletClient = await getWagmiWalletClient(wagmiConfig);
+  if (!walletClient) {
+    throw new Error('No connected wallet found');
   }
-  
-  return createWalletClient({
-    chain,
-    transport: custom((window as any).ethereum)
-  });
+  return walletClient;
 }
 
 // Get Manager contract instance for read operations

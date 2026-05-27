@@ -1,22 +1,28 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useState, useEffect, ReactNode } from 'react';
 import { formatUnits } from 'viem';
-import { getWalletClient, publicClient, getERC20Contract } from '@/lib/viem';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { publicClient, getERC20Contract } from '@/lib/viem';
 import { stocksTokens, StockToken, USDRHTokenAddress } from '@/lib/config';
+import { robinhoodChain } from '@/lib/wagmi';
 
 interface WalletContextType {
   account: `0x${string}` | null;
   balances: Record<StockToken, string>;
   usdrhBalance: string;
   connectWallet: () => Promise<void>;
+  disconnectWallet: () => Promise<void>;
   refreshBalances: () => Promise<void>;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const [account, setAccount] = useState<`0x${string}` | null>(null);
+  const { address } = useAccount();
+  const { connectAsync, connectors } = useConnect();
+  const { disconnectAsync } = useDisconnect();
+  const account = (address as `0x${string}` | undefined) ?? null;
   const [balances, setBalances] = useState<Record<StockToken, string>>({
     TSLA: '0',
     AMZN: '0',
@@ -28,16 +34,51 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const connectWallet = async () => {
     try {
-      const walletClient = getWalletClient();
-      const [address] = await walletClient.getAddresses();
-      setAccount(address);
+      const connector =
+        connectors.find((item) => item.id === 'injected') ?? connectors[0];
+
+      if (!connector) {
+        throw new Error('No wallet connectors available');
+      }
+
+      try {
+        await connectAsync({ connector, chainId: robinhoodChain.id });
+      } catch (injectedError) {
+        const walletConnectConnector = connectors.find(
+          (item) => item.id === 'walletConnect',
+        );
+        if (!walletConnectConnector) {
+          throw injectedError;
+        }
+        await connectAsync({
+          connector: walletConnectConnector,
+          chainId: robinhoodChain.id,
+        });
+      }
     } catch (error) {
       console.error('Failed to connect wallet:', error);
-      alert('Failed to connect wallet. Please ensure MetaMask is installed.');
+      alert('Failed to connect wallet. Check wallet permissions and network.');
     }
   };
 
-  const refreshBalances = async () => {
+  const disconnectWallet = async () => {
+    try {
+      await disconnectAsync();
+      setBalances({
+        TSLA: '0',
+        AMZN: '0',
+        PLTR: '0',
+        NFLX: '0',
+        AMD: '0',
+      });
+      setUsdrhBalance('0');
+    } catch (error) {
+      console.error('Failed to disconnect wallet:', error);
+      alert('Failed to disconnect wallet.');
+    }
+  };
+
+  const refreshBalances = useCallback(async () => {
     if (!account) return;
 
     const newBalances: Record<StockToken, string> = {
@@ -75,16 +116,18 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     setBalances(newBalances);
-  };
+  }, [account]);
 
   useEffect(() => {
     if (account) {
-      refreshBalances();
+      setTimeout(() => {
+        void refreshBalances();
+      }, 0);
     }
-  }, [account]);
+  }, [account, refreshBalances]);
 
   return (
-    <WalletContext.Provider value={{ account, balances, usdrhBalance, connectWallet, refreshBalances }}>
+    <WalletContext.Provider value={{ account, balances, usdrhBalance, connectWallet, disconnectWallet, refreshBalances }}>
       {children}
     </WalletContext.Provider>
   );
