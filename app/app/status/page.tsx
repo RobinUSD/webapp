@@ -2,18 +2,27 @@
 
 import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
-import { getTotalSupply } from '../../actions/status';
+import { getTotalSupply, getTotalReservesInBalances, getTotalFees } from '../../actions/status';
 import Link from 'next/link';
 
 export default function StatusPage() {
   const { account, connectWallet, disconnectWallet } = useWallet();
   const [totalSupply, setTotalSupply] = useState('0');
+  const [totalCollateral, setTotalCollateral] = useState<Record<string, string>>({});
+  const [totalFees, setTotalFees] = useState('0');
 
   useEffect(() => {
     const fetchStatus = async () => {
       try {
         const supply = await getTotalSupply();
         setTotalSupply(supply);
+
+        const totalCollateral = await getTotalReservesInBalances();
+        setTotalCollateral(totalCollateral);
+
+        const totalFees = await getTotalFees();
+        setTotalFees(totalFees);
+
       } catch (error) {
         console.error('Failed to fetch total supply:', error);
       }
@@ -77,6 +86,34 @@ export default function StatusPage() {
               <span className="text-zinc-600 dark:text-zinc-400">USDRh:</span>
               <span className="text-black dark:text-zinc-50">{totalSupply}</span>
             </div>
+          </div>
+        </div>
+
+        {/* Total Fees */}
+        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
+          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
+            Total Fees (in USDRh)
+          </h2>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-zinc-600 dark:text-zinc-400">Fees</span>
+              <span className="text-black dark:text-zinc-50">{totalFees} USDRh</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Total Collateral */}
+        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
+          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
+            Total Collateral in reserves
+          </h2>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {Object.entries(totalCollateral).map(([symbol, balance]) => (
+              <div key={symbol} className="flex justify-between">
+                <span className="text-zinc-600 dark:text-zinc-400">{symbol}:</span>
+                <span className="text-black dark:text-zinc-50">{balance}</span>
+              </div>
+            ))}
           </div>
         </div>
       </main>

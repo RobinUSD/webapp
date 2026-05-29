@@ -99,20 +99,6 @@ export default function ReturnPage() {
           </div>
         </div>
 
-        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
-            Your Stock Token Balances
-          </h2>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            {Object.entries(balances).map(([symbol, balance]) => (
-              <div key={symbol} className="flex justify-between">
-                <span className="text-zinc-600 dark:text-zinc-400">{symbol}:</span>
-                <span className="text-black dark:text-zinc-50">{balance}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Collateral by user */}
         <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
           <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
