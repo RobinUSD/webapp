@@ -22,7 +22,7 @@ A decentralized stablecoin dApp backed by real stock tokens, built on the **Robi
 
 ## Network
 
-Robin USD runs on the **Robinhood Chain Testnet**, a custom Arbitrum L2.
+RobinUSD runs on the **Robinhood Chain Testnet**, a custom Arbitrum L2.
 
 | Property | Value |
 |---|---|
