@@ -22,7 +22,7 @@ const connectors = [
           projectId: walletConnectProjectId,
           showQrModal: true,
           metadata: {
-            name: 'Robin USD',
+            name: 'RobinUSD',
             description: 'Stablecoin backed by stock tokens',
             url: 'http://localhost:3000',
             icons: [],

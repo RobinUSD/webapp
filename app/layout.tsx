@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Robin USD",
-  description: "Robin USD - Stablecoin backed by stock tokens",
+  title: "RobinUSD",
+  description: "RobinUSD - Stablecoin backed by stock tokens",
 };
 
 export default function RootLayout({

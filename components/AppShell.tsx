@@ -26,7 +26,7 @@ export function AppShell({ title, subtitle, children, backHref = '/app' }: AppSh
               <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand-500 text-xs font-bold text-white">
                 R
               </span>
-              Robin USD
+              RobinUSD
             </Link>
           </div>
 

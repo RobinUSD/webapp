@@ -11,7 +11,7 @@ export default function Dashboard() {
   const hasBalance = Object.values(balances).some((b) => b !== '0' && b !== '0.0');
 
   return (
-    <AppShell title="Dashboard" subtitle="Manage your Robin USD stablecoins" backHref="">
+    <AppShell title="Dashboard" subtitle="Manage your RobinUSD stablecoins" backHref="">
       {!account ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-800">

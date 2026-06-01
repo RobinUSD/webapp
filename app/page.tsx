@@ -65,7 +65,7 @@ export default function Home() {
 
           <h1 className="text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-7xl">
             <span className="bg-gradient-to-r from-brand-500 via-brand-600 to-accent-500 bg-clip-text text-transparent">
-              Robin USD
+              RobinUSD
             </span>
           </h1>
 
@@ -106,15 +106,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* What is Robin USD */}
+      {/* What is RobinUSD */}
       <section className="relative py-24">
         <div className="mx-auto max-w-5xl px-6">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-bold text-zinc-900 dark:text-white sm:text-4xl">
-              What is Robin USD?
+              What is RobinUSD?
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-              Robin USD <span className="font-mono text-sm text-zinc-400">(USDRh)</span> is a
+              RobinUSD <span className="font-mono text-sm text-zinc-400">(USDRh)</span> is a
               decentralized stablecoin backed by real stock tokens. By depositing stock tokens as
               collateral, users can mint USDRh stablecoins that maintain a stable value while being
               fully collateralized by real assets.
@@ -227,9 +227,9 @@ export default function Home() {
       <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 py-8">
         <div className="mx-auto max-w-5xl px-6 flex flex-col items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
           <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-            Robin USD
+            RobinUSD
           </span>
-          <p>&copy; {new Date().getFullYear()} Robin USD. Built on Robinhood Chain.</p>
+          <p>&copy; {new Date().getFullYear()} RobinUSD. Built on Robinhood Chain.</p>
         </div>
       </footer>
     </div>
