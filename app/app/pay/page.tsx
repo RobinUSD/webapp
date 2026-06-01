@@ -3,118 +3,101 @@
 import { useState } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { pay } from '../../actions/pay';
-import Link from 'next/link';
+import { AppShell } from '@/components/AppShell';
+import { BalanceCard } from '@/components/BalanceCard';
+import { FormInput } from '@/components/FormInput';
+import { useToast } from '@/components/Toast';
 
 export default function PayPage() {
-  const { account, usdrhBalance, connectWallet, disconnectWallet } = useWallet();
+  const { account, usdrhBalance, connectWallet } = useWallet();
+  const { showToast } = useToast();
   const [toAddress, setToAddress] = useState('');
   const [payAmount, setPayAmount] = useState('');
+  const [pending, setPending] = useState(false);
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!account || !toAddress || !payAmount) return;
 
+    setPending(true);
     try {
       await pay(toAddress, payAmount);
-      alert('Payment successful!');
+      showToast('Payment sent successfully!', 'success');
       setToAddress('');
       setPayAmount('');
     } catch (error) {
       console.error('Payment failed:', error);
-      alert('Payment failed. Please try again.');
+      showToast('Payment failed. Please try again.', 'error');
+    } finally {
+      setPending(false);
     }
   };
 
   if (!account) {
     return (
-      <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black min-h-screen">
-        <main className="flex flex-col w-full max-w-2xl items-center gap-8 py-16 px-8 bg-white dark:bg-black">
-          <h1 className="text-3xl font-semibold text-black dark:text-zinc-50">
-            Pay
-          </h1>
+      <AppShell title="Pay with USDRh" subtitle="Send USDRh stablecoins to another address">
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <p className="text-zinc-500 dark:text-zinc-400 mb-4">Connect your wallet to send USDRh</p>
           <button
             onClick={connectWallet}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="rounded-xl bg-brand-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600"
           >
             Connect Wallet
           </button>
-          <Link href="/app" className="text-blue-600 hover:underline">
-            Back to Dashboard
-          </Link>
-        </main>
-      </div>
+        </div>
+      </AppShell>
     );
   }
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black min-h-screen">
-      <main className="flex flex-col w-full max-w-2xl items-center gap-8 py-16 px-8 bg-white dark:bg-black">
-        <div className="w-full flex justify-between items-center">
-          <h1 className="text-3xl font-semibold text-black dark:text-zinc-50">
-            Pay with USDRh
-          </h1>
-          <Link href="/app" className="text-blue-600 hover:underline">
-            Back to Dashboard
-          </Link>
-        </div>
+    <AppShell title="Pay with USDRh" subtitle="Send USDRh stablecoins to another address">
+      <div className="grid gap-6 animate-slide-up">
+        <BalanceCard label="Your USDRh Balance" value={usdrhBalance} variant="brand" />
 
-        <div className="w-full flex items-center justify-between gap-3">
-          <div className="text-sm text-zinc-600 dark:text-zinc-400">
-            Connected: {account.slice(0, 6)}...{account.slice(-4)}
-          </div>
-          <button
-            onClick={disconnectWallet}
-            className="px-3 py-1.5 text-sm bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
-          >
-            Disconnect
-          </button>
-        </div>
-
-        {/* Balances */}
-        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
-            Your USDRh Balance
-          </h2>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-zinc-600 dark:text-zinc-400">USDRh:</span>
-              <span className="text-black dark:text-zinc-50">{usdrhBalance}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Pay Form */}
-        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
+        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6">
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mb-5">
             Send USDRh Tokens
           </h2>
-          <form onSubmit={handlePay} className="flex flex-col gap-3">
-            <input
+          <form onSubmit={handlePay} className="flex flex-col gap-4">
+            <FormInput
+              label="Recipient Address"
               type="text"
-              placeholder="Recipient Address"
+              placeholder="0x..."
               value={toAddress}
               onChange={(e) => setToAddress(e.target.value)}
-              className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black text-black dark:text-zinc-50"
+              hint="Enter the recipient's wallet address"
               required
             />
-            <input
+            <FormInput
+              label="Amount"
               type="number"
               step="0.000001"
-              placeholder="USDRh Amount"
+              placeholder="0.00"
               value={payAmount}
               onChange={(e) => setPayAmount(e.target.value)}
-              className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-black text-black dark:text-zinc-50"
+              hint={`Balance: ${usdrhBalance} USDRh`}
               required
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+              disabled={pending}
+              className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-accent-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-accent-500/20 transition-all hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Send Payment
+              {pending ? (
+                <>
+                  <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Processing...
+                </>
+              ) : (
+                'Send Payment'
+              )}
             </button>
           </form>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

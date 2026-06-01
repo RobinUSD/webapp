@@ -3,28 +3,32 @@
 import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { getTotalSupply, getTotalReservesInBalances, getTotalFees } from '../../actions/status';
-import Link from 'next/link';
+import { AppShell } from '@/components/AppShell';
+import { BalanceCard } from '@/components/BalanceCard';
 
 export default function StatusPage() {
-  const { account, connectWallet, disconnectWallet } = useWallet();
-  const [totalSupply, setTotalSupply] = useState('0');
+  const { account, connectWallet } = useWallet();
+  const [totalSupply, setTotalSupply] = useState<string | undefined>();
   const [totalCollateral, setTotalCollateral] = useState<Record<string, string>>({});
-  const [totalFees, setTotalFees] = useState('0');
+  const [totalFees, setTotalFees] = useState<string | undefined>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStatus = async () => {
+      setLoading(true);
       try {
-        const supply = await getTotalSupply();
+        const [supply, collateral, fees] = await Promise.all([
+          getTotalSupply(),
+          getTotalReservesInBalances(),
+          getTotalFees(),
+        ]);
         setTotalSupply(supply);
-
-        const totalCollateral = await getTotalReservesInBalances();
-        setTotalCollateral(totalCollateral);
-
-        const totalFees = await getTotalFees();
-        setTotalFees(totalFees);
-
+        setTotalCollateral(collateral);
+        setTotalFees(fees);
       } catch (error) {
-        console.error('Failed to fetch total supply:', error);
+        console.error('Failed to fetch status:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -33,90 +37,51 @@ export default function StatusPage() {
 
   if (!account) {
     return (
-      <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black min-h-screen">
-        <main className="flex flex-col w-full max-w-2xl items-center gap-8 py-16 px-8 bg-white dark:bg-black">
-          <h1 className="text-3xl font-semibold text-black dark:text-zinc-50">
-            Status
-          </h1>
+      <AppShell title="Protocol Status" subtitle="View total USDRh supply and protocol reserves">
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <p className="text-zinc-500 dark:text-zinc-400 mb-4">Connect your wallet to view protocol status</p>
           <button
             onClick={connectWallet}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="rounded-xl bg-brand-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600"
           >
             Connect Wallet
           </button>
-          <Link href="/app" className="text-blue-600 hover:underline">
-            Back to Dashboard
-          </Link>
-        </main>
-      </div>
+        </div>
+      </AppShell>
     );
   }
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black min-h-screen">
-      <main className="flex flex-col w-full max-w-2xl items-center gap-8 py-16 px-8 bg-white dark:bg-black">
-        <div className="w-full flex justify-between items-center">
-          <h1 className="text-3xl font-semibold text-black dark:text-zinc-50">
-            Status
-          </h1>
-          <Link href="/app" className="text-blue-600 hover:underline">
-            Back to Dashboard
-          </Link>
+    <AppShell title="Protocol Status" subtitle="View total USDRh supply and protocol reserves">
+      <div className="grid gap-6 animate-slide-up">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <BalanceCard label="Total USDRh Supply" value={totalSupply} loading={loading} variant="brand" />
+          <BalanceCard label="Total Fees (USDRh)" value={totalFees} loading={loading} variant="accent" />
         </div>
 
-        <div className="w-full flex items-center justify-between gap-3">
-          <div className="text-sm text-zinc-600 dark:text-zinc-400">
-            Connected: {account.slice(0, 6)}...{account.slice(-4)}
-          </div>
-          <button
-            onClick={disconnectWallet}
-            className="px-3 py-1.5 text-sm bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
-          >
-            Disconnect
-          </button>
-        </div>
-
-        {/* Total Supply */}
-        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
-            Total USDRh Supply
+        <div>
+          <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-3">
+            Total Collateral in Reserves
           </h2>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-zinc-600 dark:text-zinc-400">USDRh:</span>
-              <span className="text-black dark:text-zinc-50">{totalSupply}</span>
-            </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {Object.keys(totalCollateral).length > 0
+              ? Object.entries(totalCollateral).map(([symbol, balance]) => (
+                  <BalanceCard
+                    key={symbol}
+                    label={symbol}
+                    value={balance}
+                    symbol={symbol}
+                    loading={loading}
+                  />
+                ))
+              : !loading && (
+                  <p className="text-sm text-zinc-400 dark:text-zinc-500 col-span-full py-4">
+                    No collateral data available.
+                  </p>
+                )}
           </div>
         </div>
-
-        {/* Total Fees */}
-        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
-            Total Fees (in USDRh)
-          </h2>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-zinc-600 dark:text-zinc-400">Fees</span>
-              <span className="text-black dark:text-zinc-50">{totalFees} USDRh</span>
-            </div>
-          </div>
-        </div>
-        
-        {/* Total Collateral */}
-        <div className="w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3 text-black dark:text-zinc-50">
-            Total Collateral in reserves
-          </h2>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            {Object.entries(totalCollateral).map(([symbol, balance]) => (
-              <div key={symbol} className="flex justify-between">
-                <span className="text-zinc-600 dark:text-zinc-400">{symbol}:</span>
-                <span className="text-black dark:text-zinc-50">{balance}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

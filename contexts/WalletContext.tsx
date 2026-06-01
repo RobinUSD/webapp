@@ -6,6 +6,7 @@ import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { publicClient, getERC20Contract } from '@/lib/viem';
 import { stocksTokens, StockToken, USDRHTokenAddress } from '@/lib/config';
 import { robinhoodChain } from '@/lib/wagmi';
+import { useToast } from '@/components/Toast';
 
 interface WalletContextType {
   account: `0x${string}` | null;
@@ -23,6 +24,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const { connectAsync, connectors } = useConnect();
   const { disconnectAsync } = useDisconnect();
   const account = (address as `0x${string}` | undefined) ?? null;
+  const { showToast } = useToast();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [balances, setBalances] = useState<Record<StockToken, string>>({
     TSLA: '0',
@@ -48,7 +50,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setIsWalletModalOpen(false);
     } catch (error) {
       console.error('Failed to connect wallet:', error);
-      alert('Failed to connect wallet. Check wallet permissions and network.');
+      showToast('Failed to connect wallet. Check wallet permissions and network.', 'error');
     }
   };
 
@@ -66,7 +68,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setUsdrhBalance('0');
     } catch (error) {
       console.error('Failed to disconnect wallet:', error);
-      alert('Failed to disconnect wallet.');
+      showToast('Failed to disconnect wallet.', 'error');
     }
   };
 
