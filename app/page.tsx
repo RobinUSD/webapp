@@ -45,7 +45,8 @@ const features = [
 const steps = [
   { num: '1', title: 'Deposit Stock Tokens', desc: 'Connect your wallet and deposit supported stock tokens as collateral' },
   { num: '2', title: 'Mint USDRh', desc: 'Receive USDRh stablecoins equal to the value of your collateral' },
-  { num: '3', title: 'Use or Redeem', desc: 'Send USDRh to others or burn it to redeem your stock tokens' },
+  { num: '3', title: 'Use in DeFi protocols', desc: 'Use your USDRh stablecoins in DeFi protocols to earn interest or trade' },
+  { num: '4', title: 'Send or redeem', desc: 'Send USDRh to others or burn it to redeem your stock tokens' },
 ];
 
 export default function Home() {
@@ -114,7 +115,7 @@ export default function Home() {
               What is RobinUSD?
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-              RobinUSD <span className="font-mono text-sm text-zinc-400">(USDRh)</span> is a
+              RobinUSD <span className="font-bold text-md">(USDRh)</span> is a
               decentralized stablecoin backed by real stock tokens. By depositing stock tokens as
               collateral, users can mint USDRh stablecoins that maintain a stable value while being
               fully collateralized by real assets.
@@ -130,7 +131,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center text-zinc-900 dark:text-white sm:text-4xl mb-16">
             How It Works
           </h2>
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-4">
             {steps.map((step, i) => (
               <div key={step.num} className="relative text-center animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
                 <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg shadow-brand-500/20">

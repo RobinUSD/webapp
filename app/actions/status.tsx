@@ -5,7 +5,7 @@ import { getWalletClient, publicClient, getERC20Contract, getManagerContract } f
 import { USDRHTokenAddress, USDRHManagerAddress, stocksTokens } from '@/lib/config';
 
 
-export async function getTotalSupply() {
+export async function getTotalSupply(decimals = 4) {
   const totalSupply = await publicClient.readContract({
         address: USDRHTokenAddress as `0x${string}`,
         abi: getERC20Contract(USDRHTokenAddress).abi,
@@ -14,8 +14,9 @@ export async function getTotalSupply() {
       });
 
   const totalSupplyFormatted = formatEther(totalSupply);
+  const withDecimals = Number(totalSupplyFormatted).toFixed(decimals);
 
-  return totalSupplyFormatted;
+  return withDecimals;
 }
 
 export async function getTotalReservesInBalances() {
@@ -49,7 +50,7 @@ export async function getTotalReservesInBalances() {
   return totalCollateral;
 }
 
-export async function getTotalFees() {
+export async function getTotalFees(decimals = 4) {
   const totalFees = await publicClient.readContract({
         address: USDRHManagerAddress as `0x${string}`,
         abi: getManagerContract().abi,
@@ -58,6 +59,21 @@ export async function getTotalFees() {
       });
 
   const totalFeesFormatted = formatEther(totalFees);
+  const withDecimals = Number(totalFeesFormatted).toFixed(decimals);
 
-  return totalFeesFormatted;
+  return withDecimals;
+}
+
+export async function getLatestPrice(tokenAddress: string, decimals = 4) {
+  const latestPrice = await publicClient.readContract({
+    address: USDRHManagerAddress as `0x${string}`,
+    abi: getManagerContract().abi,
+    functionName: 'getLatestPrice',
+    args: [tokenAddress as `0x${string}`]
+  });
+
+  const latestPriceFormatted = formatEther(latestPrice);
+  const withDecimals = Number(latestPriceFormatted).toFixed(decimals);
+
+  return withDecimals;
 }

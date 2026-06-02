@@ -8,6 +8,7 @@ import { AppShell } from '@/components/AppShell';
 import { BalanceCard } from '@/components/BalanceCard';
 import { FormInput, FormSelect } from '@/components/FormInput';
 import { useToast } from '@/components/Toast';
+import { getLatestPrice } from '../../actions/status';
 
 export default function ReturnPage() {
   const { account, usdrhBalance, connectWallet, refreshBalances } = useWallet();
@@ -15,6 +16,7 @@ export default function ReturnPage() {
   const [returnToken, setReturnToken] = useState<StockToken>('TSLA');
   const [returnAmount, setReturnAmount] = useState('');
   const [collateralByUser, setCollateralByUser] = useState<Record<string, string>>({});
+  const [latestPrice, setLatestPrice] = useState('');
   const [pending, setPending] = useState(false);
 
   useEffect(() => {
@@ -24,6 +26,21 @@ export default function ReturnPage() {
         .catch(console.error);
     }
   }, [account]);
+
+  useEffect(() => {
+    const fetchLatestPrice = async () => {
+      try {
+        const tokenAddress = stocksTokens[returnToken];
+        const latestPriceData = await getLatestPrice(tokenAddress);
+        setLatestPrice(latestPriceData);
+      } catch (error) {
+        console.error('Failed to fetch latest price:', error);
+        setLatestPrice('0');
+      }
+    };
+
+    fetchLatestPrice();
+  }, [returnToken]);
 
   const handleReturn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,6 +106,13 @@ export default function ReturnPage() {
               onChange={(e) => setReturnToken(e.target.value as StockToken)}
               options={tokenOptions}
             />
+            <div className="flex items-center gap-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 px-3 py-2 text-sm">
+              <span className="text-zinc-500 dark:text-zinc-400">Latest Price:</span>
+              <span className="font-semibold text-zinc-900 dark:text-zinc-50">
+                {latestPrice || '...'}
+              </span>
+              <span className="text-zinc-400 text-xs">USD per {returnToken} approximately</span>
+            </div>
             <FormInput
               label="USDRh Amount"
               type="number"

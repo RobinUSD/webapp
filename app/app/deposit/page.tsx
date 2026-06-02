@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { stocksTokens, StockToken } from '@/lib/config';
 import { depositAndMint } from '../../actions/deposit';
@@ -8,12 +8,14 @@ import { AppShell } from '@/components/AppShell';
 import { BalanceCard } from '@/components/BalanceCard';
 import { FormInput, FormSelect } from '@/components/FormInput';
 import { useToast } from '@/components/Toast';
+import { getLatestPrice } from '../../actions/status';
 
 export default function DepositPage() {
   const { account, balances, usdrhBalance, refreshBalances, connectWallet } = useWallet();
   const { showToast } = useToast();
   const [depositToken, setDepositToken] = useState<StockToken>('TSLA');
   const [depositAmount, setDepositAmount] = useState('');
+  const [latestPrice, setLatestPrice] = useState('');
   const [pending, setPending] = useState(false);
 
   const handleDeposit = async (e: React.FormEvent) => {
@@ -34,6 +36,21 @@ export default function DepositPage() {
       setPending(false);
     }
   };
+
+  useEffect(() => {
+    const fetchLatestPrice = async () => {
+      try {
+        const tokenAddress = stocksTokens[depositToken];
+        const latestPriceData = await getLatestPrice(tokenAddress);
+        setLatestPrice(latestPriceData);
+      } catch (error) {
+        console.error('Failed to fetch latest price:', error);
+        setLatestPrice('0');
+      }
+    };
+
+    fetchLatestPrice();
+  }, [depositToken]);
 
   if (!account) {
     return (
@@ -76,6 +93,13 @@ export default function DepositPage() {
               onChange={(e) => setDepositToken(e.target.value as StockToken)}
               options={tokenOptions}
             />
+            <div className="flex items-center gap-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 px-3 py-2 text-sm">
+              <span className="text-zinc-500 dark:text-zinc-400">Latest Price:</span>
+              <span className="font-semibold text-zinc-900 dark:text-zinc-50">
+                {latestPrice || '...'}
+              </span>
+              <span className="text-zinc-400 text-xs">USD per {depositToken} approximately</span>
+            </div>
             <FormInput
               label="Amount"
               type="number"
