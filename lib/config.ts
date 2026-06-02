@@ -1,4 +1,4 @@
-export const USDRHManagerAddress = "0x2eF4Db2F510637C0FcfeE0C82E8566849e554f77";
+export const USDRHManagerAddress = "0x758AB6eC7992E8752c5f43b5e4Eb619643312079";
 export const USDRHTokenAddress = "0x641D5c4c02C63755FB97A2BCc59623451cA7D825";
 
 // Stocks tokens
