@@ -156,6 +156,13 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Image*/}
+      <section className="relative py-24 flex justify-center items-center">
+        <div className="mx-auto max-w-5xl px-6 text-center">
+          <img src="/images/image_robinusd_1.png" alt="RobinUSD" width={400} height={400} className="rounded-2xl" />
+        </div>
+      </section>
+
       {/* Benefits */}
       <section className="relative py-24">
         <div className="mx-auto max-w-5xl px-6">
