@@ -38,8 +38,8 @@ All contracts are deployed on Robinhood Chain Testnet.
 
 | Contract | Address |
 |---|---|
-| USDRH Token | [`0xb9cA08D3B4289BbEEA6d933A6CA61A25b2868A90`](https://explorer.testnet.chain.robinhood.com/address/0xb9cA08D3B4289BbEEA6d933A6CA61A25b2868A90) |
-| USDRH Manager | [`0xde4CBfA3d414647dEF3C3c89Dcd8BcE4d4213c83`](https://explorer.testnet.chain.robinhood.com/address/0xde4CBfA3d414647dEF3C3c89Dcd8BcE4d4213c83) |
+| USDRH Token | [`0x641D5c4c02C63755FB97A2BCc59623451cA7D825`](https://explorer.testnet.chain.robinhood.com/address/0x641D5c4c02C63755FB97A2BCc59623451cA7D825) |
+| USDRH Manager | [`0x758AB6eC7992E8752c5f43b5e4Eb619643312079`](https://explorer.testnet.chain.robinhood.com/address/0x758AB6eC7992E8752c5f43b5e4Eb619643312079) |
 
 ### Supported Stock Tokens
 

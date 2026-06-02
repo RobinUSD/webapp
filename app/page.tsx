@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const stockTickers = ['TSLA', 'AMZN', 'PLTR', 'NFLX', 'AMD'];
 
@@ -64,7 +65,14 @@ export default function Home() {
             Live on Robinhood Chain
           </div>
 
-          <h1 className="text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-7xl">
+          <h1 className="text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-7xl flex items-center justify-center gap-4">
+            <Image
+              src="/images/robinusd_icon.png"
+              alt="Robin USD logo"
+              width={64}
+              height={64}
+              className="h-12 w-12 sm:h-16 sm:w-16"
+            />
             <span className="bg-gradient-to-r from-brand-500 via-brand-600 to-accent-500 bg-clip-text text-transparent">
               RobinUSD
             </span>
@@ -159,7 +167,7 @@ export default function Home() {
       {/* Image*/}
       <section className="relative py-24 flex justify-center items-center">
         <div className="mx-auto max-w-5xl px-6 text-center">
-          <img src="/images/image_robinusd_1.png" alt="RobinUSD" width={400} height={400} className="rounded-2xl" />
+          <Image src="/images/image_robinusd_1.png" alt="RobinUSD" width={400} height={400} className="rounded-2xl" />
         </div>
       </section>
 

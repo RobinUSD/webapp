@@ -5,6 +5,7 @@ import { useWallet } from '@/contexts/WalletContext';
 import { getTotalSupply, getTotalReservesInBalances, getTotalFees } from '../../actions/status';
 import { AppShell } from '@/components/AppShell';
 import { BalanceCard } from '@/components/BalanceCard';
+import { USDRHTokenAddress, USDRHManagerAddress, EXPLORER_URL } from '@/lib/config';
 
 export default function StatusPage() {
   const { account, connectWallet } = useWallet();
@@ -79,6 +80,36 @@ export default function StatusPage() {
                     No collateral data available.
                   </p>
                 )}
+          </div>
+        </div>
+        {/* Explorer Links */}
+        <div className="border-t border-zinc-200 dark:border-zinc-800 pt-6 mt-4">
+          <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-3">
+            Contract Explorer
+          </h2>
+          <div className="flex flex-col gap-2 text-sm">
+            <a
+              href={`${EXPLORER_URL}/address/${USDRHTokenAddress}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-accent-600 dark:text-accent-400 hover:underline"
+            >
+              <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              USDRh Token ({USDRHTokenAddress.slice(0, 6)}...{USDRHTokenAddress.slice(-4)})
+            </a>
+            <a
+              href={`${EXPLORER_URL}/address/${USDRHManagerAddress}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-accent-600 dark:text-accent-400 hover:underline"
+            >
+              <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              USDRH Manager ({USDRHManagerAddress.slice(0, 6)}...{USDRHManagerAddress.slice(-4)})
+            </a>
           </div>
         </div>
       </div>

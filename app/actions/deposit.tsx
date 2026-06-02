@@ -17,7 +17,10 @@ export async function approveToken(tokenAddress: string, amount: bigint) {
   });
 
   const hash = await walletClient.writeContract(request);
-  await publicClient.waitForTransactionReceipt({ hash });
+  const receipt =await publicClient.waitForTransactionReceipt({ hash });
+  if(receipt.status !== "success") {
+    throw new Error("Approval failed");
+  }
   return hash;
 }
 
@@ -51,6 +54,9 @@ export async function depositAndMint(tokenAddress: string, amount: string) {
   });
 
   const hash = await walletClient.writeContract(request);
-  await publicClient.waitForTransactionReceipt({ hash });
+  const receipt =await publicClient.waitForTransactionReceipt({ hash });
+  if(receipt.status !== "success") {
+    throw new Error("Deposit and mint failed");
+  }
   return hash;
 }

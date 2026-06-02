@@ -1,12 +1,41 @@
 'use client';
 
+import { useCallback } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { AppShell } from '@/components/AppShell';
 import { BalanceCard } from '@/components/BalanceCard';
 import { ActionCard } from '@/components/ActionCard';
+import { useToast } from '@/components/Toast';
+import { USDRHTokenAddress } from '@/lib/config';
 
 export default function Dashboard() {
   const { account, balances, usdrhBalance, refreshBalances } = useWallet();
+  const { showToast } = useToast();
+
+  const addTokenToMetaMask = useCallback(async () => {
+    if (!window.ethereum) {
+      showToast('MetaMask not detected', 'error');
+      return;
+    }
+
+    try {
+      await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: USDRHTokenAddress,
+            symbol: 'USDRh',
+            decimals: 18,
+          },
+        },
+      });
+      showToast('USDRh added to MetaMask!', 'success');
+    } catch (error) {
+      console.error('Failed to add token:', error);
+      showToast('Failed to add token to MetaMask', 'error');
+    }
+  }, [showToast]);
 
   const hasBalance = Object.values(balances).some((b) => b !== '0' && b !== '0.0');
 
@@ -30,11 +59,22 @@ export default function Dashboard() {
       ) : (
         <div className="flex flex-col gap-6 animate-slide-up">
           {/* USDRh Balance */}
-          <BalanceCard
-            label="Your USDRh Balance"
-            value={usdrhBalance}
-            variant="brand"
-          />
+          <div className="relative">
+            <BalanceCard
+              label="Your USDRh Balance"
+              value={usdrhBalance}
+              variant="brand"
+            />
+            <button
+              onClick={addTokenToMetaMask}
+              className="mt-2 flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300 transition-colors"
+            >
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add USDRh to MetaMask
+            </button>
+          </div>
 
           {/* Stock Token Balances */}
           <div>

@@ -1,6 +1,8 @@
 export const USDRHManagerAddress = "0x758AB6eC7992E8752c5f43b5e4Eb619643312079";
 export const USDRHTokenAddress = "0x641D5c4c02C63755FB97A2BCc59623451cA7D825";
 
+export const EXPLORER_URL = "https://explorer.testnet.chain.robinhood.com";
+
 // Stocks tokens
 export const stocksTokens = {
   "TSLA": "0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E",

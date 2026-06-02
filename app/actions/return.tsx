@@ -21,7 +21,10 @@ export async function burnAndRedeem(tokenAddress: string, stableAmount: string) 
   });
 
   const hash = await walletClient.writeContract(request);
-  await publicClient.waitForTransactionReceipt({ hash });
+  const receipt =await publicClient.waitForTransactionReceipt({ hash });
+  if(receipt.status !== "success") {
+    throw new Error("Burn and redeem failed");
+  }
   return hash;
 }
 

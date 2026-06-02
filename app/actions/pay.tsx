@@ -21,6 +21,9 @@ export async function pay(toAddress: string, amount: string) {
   });
 
   const hash = await walletClient.writeContract(request);
-  await publicClient.waitForTransactionReceipt({ hash });
+  const receipt =await publicClient.waitForTransactionReceipt({ hash });
+  if(receipt.status !== "success") {
+    throw new Error("Payment failed");
+  }
   return hash;
 }
