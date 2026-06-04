@@ -2,6 +2,8 @@
 
 A decentralized stablecoin dApp backed by real stock tokens, built on the **Robinhood Chain**. Users can deposit stock tokens as collateral, mint USDRh stablecoins, send them to others, and burn them to redeem their collateral — all through a modern web interface.
 
+The smart contracts are available in the [contracts repo](https://github.com/RobinUSD/contracts)
+
 ## Features
 
 - **Deposit & Mint** — Deposit supported stock tokens (TSLA, AMZN, PLTR, NFLX, AMD) as collateral and mint USDRh stablecoins at the current collateral ratio
